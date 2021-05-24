@@ -1,5 +1,6 @@
 const express = require("express");
 const nodemailer = require("nodemailer");
+const mailgun = require("nodemailer-mailgun-transport");
 const cors = require("cors");
 require("dotenv").config({ path: "./.env" });
 const app = express();
@@ -8,8 +9,17 @@ app.use(express.json());
 app.use(cors({ credentials: true }));
 const port = process.env.PORT || 5000;
 
+const auth = {
+  auth: {
+    api_key: process.env.API_KEY,
+    domain: process.env.DOMAIN,
+  },
+};
+
+const transporter = nodemailer.createTransport(mailgun(auth));
+
 app.get("/", (req, res) => {
-  res.render("Hey there!");
+  res.json({ message: "Hey thereee!" });
 });
 
 app.post("/send", (req, res) => {
@@ -25,22 +35,10 @@ app.post("/send", (req, res) => {
     <p>${req.body.message}</p>
   `;
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: process.env.EMAIL, // generated ethereal user
-      pass: process.env.PASSWORD, // generated ethereal password
-    },
-    tls: {
-      rejectUnauthorized: false,
-    },
-  });
-
   let mailOptions = {
     name: req.body.name,
     from: req.body.email, // sender address
-    to: "kums2kaushik@gmail.com", // list of receivers
+    to: "kumarankaushik@gmail.com", // list of receivers
     subject: `Scylla here! ${req.body.email} is trying to get in touch with you.`,
     text: req.body.message,
     html: output, // plain text body
