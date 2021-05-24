@@ -5,7 +5,7 @@ require("dotenv").config({ path: "./.env" });
 const app = express();
 app.use(express.json());
 
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+app.use(cors({ credentials: true }));
 const port = process.env.PORT || 5000;
 
 app.get("/", (req, res) => {
